@@ -1,0 +1,30 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: backend_course_postgres
+    env_file:
+      - ../build/.env
+    ports:
+      - "5433:5432"                        # host:container → снаружи 5433, внутри стандартный 5432
+    volumes:
+      - db_data:/var/lib/postgresql/data   # ПЕРСИСТЕНТНЫЕ ДАННЫЕ БД
+      - ./init:/docker-entrypoint-initdb.d # (опционально) скрипты первого запуска
+    networks:
+      - course_net
+
+  app:
+    build:
+      context: ..
+      dockerfile: build/Dockerfile
+    container_name: backend_course_app
+    ports:
+      - "9100:9100"
+    networks:
+      - course_net
+
+volumes:
+  db_data:
+
+networks:
+  course_net:
+    driver: bridge
