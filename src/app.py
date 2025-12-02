@@ -13,7 +13,7 @@ import databases.postgresql.models
 async def lifespan(app: FastAPI):
     # Код до yield выполняется один раз на старте (инициализация ресурсов: БД, кэш, клиенты).
 
-    sessionmanager.init("postgresql+asyncpg://user:password@db:5432/backend_course")
+    sessionmanager.init("postgresql+asyncpg://user:password@localhost:5433/backend_course")
 
     # --- startup: создаём таблицы один раз (идемпотентно) ---
     async with sessionmanager.connect() as connection:
