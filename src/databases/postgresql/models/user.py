@@ -1,3 +1,5 @@
+from typing import Optional
+
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String
 
@@ -12,4 +14,5 @@ class User(Base):
     full_name: Mapped[str] = mapped_column(String(128))
     email: Mapped[str] = mapped_column(unique=True, nullable=False)
     biography: Mapped[str] = mapped_column(String(1000))
-    author: Mapped["Author"] = relationship(back_populates="user")
+
+    author: Mapped[Optional["Author"]] = relationship(back_populates="user")

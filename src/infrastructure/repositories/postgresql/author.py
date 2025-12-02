@@ -17,9 +17,10 @@ class PostgreSQLAuthorRepository:
             full_name=payload.full_name,
         )
         self._session.add(author)
-        await self._session.flush()
-        return AuthorSchema(
+        await self._session.commit()
+        schema = AuthorSchema(
             id=author.id,
             full_name=author.full_name,
             user_id=author.user_id,
         )
+        return schema
