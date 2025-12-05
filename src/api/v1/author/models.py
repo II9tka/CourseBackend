@@ -8,3 +8,9 @@ class CreateUpdateAuthorSchema(BaseModel):
 
 class AuthorSchema(CreateUpdateAuthorSchema):
     id: int
+
+
+class AuthorFilterSchema(BaseModel):
+    full_name: str | None = None
+    user_id: int | None = None
+    author_id: int | None = None
