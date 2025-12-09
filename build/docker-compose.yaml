@@ -12,15 +12,15 @@ services:
     networks:
       - course_net
 
-  app:
-    build:
-      context: ..
-      dockerfile: build/Dockerfile
-    container_name: backend_course_app
-    ports:
-      - "9100:9100"
-    networks:
-      - course_net
+#  app:
+#    build:
+#      context: ..
+#      dockerfile: build/Dockerfile
+#    container_name: backend_course_app
+#    ports:
+#      - "9100:9100"
+#    networks:
+#      - course_net
 
 volumes:
   db_data:

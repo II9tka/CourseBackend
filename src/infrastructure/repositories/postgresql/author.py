@@ -1,12 +1,8 @@
-from abc import ABC
-
 from sqlalchemy import select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.v1.author.models import CreateUpdateAuthorSchema, AuthorSchema
-from databases.postgresql.models import Author
-from databases.postgresql.session_manager import sessionmanager
-from utils.enums import Genre
+from infrastructure.databases.postgresql.models import Author
 
 
 class PostgreSQLAuthorRepository:

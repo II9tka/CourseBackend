@@ -9,7 +9,6 @@ from domain.item.repository import AbstractItemRepository, ItemNotFoundError
 from .dependencies import get_item_repo
 from .models import ItemSchema, ItemListSchema, ItemCreateSchema, ItemUpdateSchema
 
-
 router = APIRouter(prefix='/items')
 
 

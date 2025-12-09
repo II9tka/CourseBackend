@@ -1,11 +1,10 @@
 from fastapi import status, APIRouter, Depends
 from fastapi.responses import JSONResponse
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from databases.postgresql.session import get_async_session
-from infrastructure.di.injection import get_author_unit_of_work
 from infrastructure.repositories.postgresql.uow import PostgreSQLAuthorUnitOfWork
+from usecase.create_author.abstract import AbstractCreateAuthorUseCase
 
+from .dependencies import get_author_unit_of_work, create_author_use_case
 from .models import AuthorSchema, CreateUpdateAuthorSchema, AuthorFilterSchema
 
 router = APIRouter(prefix='/authors')
@@ -14,11 +13,9 @@ router = APIRouter(prefix='/authors')
 @router.post("", response_model=AuthorSchema)
 async def create_author(
     payload: CreateUpdateAuthorSchema,
-    uow: PostgreSQLAuthorUnitOfWork = Depends(get_author_unit_of_work),
+    usecase: AbstractCreateAuthorUseCase = Depends(create_author_use_case)
 ) -> JSONResponse:
-    async with uow as uow_:
-        author = await uow_.repository.create(payload)
-
+    author = await usecase.execute(payload)
     return JSONResponse(status_code=status.HTTP_201_CREATED, content=author.model_dump())
 
 
