@@ -16,6 +16,7 @@ async def lifespan(app: FastAPI):
     sessionmanager.init("postgresql+asyncpg://user:password@localhost:5433/backend_course")
 
     # --- startup: создаём таблицы один раз (идемпотентно) ---
+
     async with sessionmanager.connect() as connection:
         await sessionmanager.create_all(connection)
 

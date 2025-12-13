@@ -11,6 +11,11 @@ services:
       - ./init:/docker-entrypoint-initdb.d # (опционально) скрипты первого запуска
     networks:
       - course_net
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
 
 #  app:
 #    build:
@@ -21,6 +26,10 @@ services:
 #      - "9100:9100"
 #    networks:
 #      - course_net
+#    depends_on:
+#      db:
+#        condition: service_healthy
+
 
 volumes:
   db_data:

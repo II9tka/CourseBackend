@@ -14,5 +14,11 @@ class User(Base):
     full_name: Mapped[str] = mapped_column(String(128))
     email: Mapped[str] = mapped_column(unique=True, nullable=False)
     biography: Mapped[str] = mapped_column(String(1000))
+    password: Mapped[str] = mapped_column(String(255), nullable=False)
+
+    tokens: Mapped[list["Token"]] = relationship(
+        back_populates="user",
+        cascade="all, delete, delete-orphan",
+    )
 
     author: Mapped[Optional["Author"]] = relationship(back_populates="user")
