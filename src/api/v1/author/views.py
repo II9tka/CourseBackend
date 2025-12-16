@@ -1,7 +1,7 @@
 from fastapi import status, APIRouter, Depends
 from fastapi.responses import JSONResponse
 
-from infrastructure.repositories.postgresql.uow import PostgreSQLAuthorUnitOfWork
+from infrastructure.repositories.postgresql.author import PostgreSQLAuthorUnitOfWork
 from usecase.create_author.abstract import AbstractCreateAuthorUseCase
 
 from .dependencies import get_author_unit_of_work, create_author_use_case

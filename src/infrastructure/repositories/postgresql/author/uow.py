@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from infrastructure.repositories.postgresql.author import PostgreSQLAuthorRepository
+from infrastructure.repositories.postgresql.author.author import PostgreSQLAuthorRepository
 
 
 class PostgreSQLAuthorUnitOfWork:
