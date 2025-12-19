@@ -1,27 +1,33 @@
 from fastapi import status, APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse
+from fastapi.security import OAuth2PasswordBearer
 
-from infrastructure.repositories.postgresql.user.exceptions import UserIsExist
-# from infrastructure.repositories.postgresql.author import PostgreSQLAuthorUnitOfWork
-from usecase.create_user.abstract import AbstractCreateUserUseCase
+from infrastructure.repositories.postgresql.user.exceptions import UserNotFound
+from usecase.create_token.abstract import AbstractCreateTokenUseCase
+from usecase.refresh_token.abstract import AbstractRefreshTokenUseCase
 
-# from .dependencies import get_user_unit_of_work, create_user_use_case
-from .models import UserLoginSchema, TokenSchema
+from .dependencies import create_token_use_case, refresh_token_use_case
+from .models import UserLoginSchema, TokenSchema, RefreshTokenSchema
 
 router = APIRouter(prefix='/auth')
 
 
-@router.post("", response_model=TokenSchema)
+@router.post("/token", response_model=TokenSchema)
 async def create_token(
     payload: UserLoginSchema,
-    # usecase: AbstractCreateUserUseCase = Depends(create_user_use_case)
+    usecase: AbstractCreateTokenUseCase = Depends(create_token_use_case)
 ) -> JSONResponse:
-    ...
-
-    # try:
-    #     user = await usecase.execute(payload)
-    # except UserIsExist as e:
-    #     raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
-    # return JSONResponse(status_code=status.HTTP_201_CREATED, content=user.model_dump())
+    try:
+        token = await usecase.execute(payload)
+    except UserNotFound as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    return JSONResponse(status_code=status.HTTP_201_CREATED, content=token.model_dump(mode='json'))
 
 
+@router.post("/token/refresh", response_model=TokenSchema)
+async def refresh_token(
+    payload: RefreshTokenSchema,
+    usecase: AbstractRefreshTokenUseCase = Depends(refresh_token_use_case)
+) -> JSONResponse:
+    token = await usecase.execute(payload)
+    return JSONResponse(status_code=status.HTTP_201_CREATED, content=token.model_dump(mode='json'))

@@ -5,9 +5,10 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.v1.auth.models import UserLoginSchema
+from api.v1.user.crypto import context
 from api.v1.user.models import CreateUserSchema, UserSchema
 from infrastructure.databases.postgresql.models import User
-from infrastructure.repositories.postgresql.user.exceptions import UserIsExist
+from infrastructure.repositories.postgresql.user.exceptions import UserIsExist, UserNotFound
 
 
 class PostgreSQLUserRepository:
@@ -41,8 +42,23 @@ class PostgreSQLUserRepository:
         )
         return schema
 
-    async def is_exists(self, schema: UserLoginSchema) -> bool:
-        query = select(User).where(and_(User.password==schema.password, User.username==schema.username))
+    async def get(self, schema: UserLoginSchema) -> UserSchema | None:
+        query = select(User).where(and_(User.username == schema.username))
         result = await self._session.execute(query)
         user = result.scalar_one_or_none()
-        return bool(user)
+
+        if user is None:
+            raise UserNotFound()
+
+        verify = context.verify(schema.password, user.password)
+
+        if verify:
+            return UserSchema(
+                id=user.id,
+                full_name=user.full_name,
+                biography=user.biography,
+                email=user.email,
+                username=user.username,
+            )
+
+        raise UserNotFound()
