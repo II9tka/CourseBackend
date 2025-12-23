@@ -1,0 +1,13 @@
+app:
+  name: "Course APP"
+  host: "0.0.0.0"
+  port: 8000
+  secret_key: "asdgsdggstrsr324rwqad"
+  debug: true
+
+database:
+  user: 'user'
+  password: 'password'
+  host: 'localhost'
+  port: 5432
+  name: 'backend_course'

@@ -1,0 +1,42 @@
+FROM python:3.12-slim-bookworm AS builder
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    g++ \
+    build-essential \
+    curl \
+    git \
+    ca-certificates \
+    python3-dev \
+    libffi-dev \
+    patchelf \
+    && pip3 install --upgrade pip \
+    && pip3 install nuitka
+
+WORKDIR /app
+
+COPY .. .
+
+RUN pip3 install -r requirements.txt
+RUN nuitka \
+    --standalone \
+    --enable-plugin=multiprocessing \
+    --follow-imports \
+    --include-module=app \
+    --output-dir=dist \
+    src/app.py
+
+FROM debian:bookworm-slim AS runtime
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpython3.12 \
+    libffi8 \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY --from=builder /app/dist/app.dist/ ./
+
+EXPOSE ... <-
+
+CMD ["./app.bin"]
