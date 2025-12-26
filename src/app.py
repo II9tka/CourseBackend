@@ -16,11 +16,6 @@ async def lifespan(app: FastAPI):
     sessionmanager = container.session_manager()
     sessionmanager.init(settings.database.get_database_url())
 
-    # --- startup: создаём таблицы один раз (идемпотентно) ---
-
-    async with sessionmanager.connect() as connection:
-        await sessionmanager.create_all(connection)
-
     try:
         yield
 
