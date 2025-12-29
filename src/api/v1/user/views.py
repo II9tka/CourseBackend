@@ -15,7 +15,6 @@ router = APIRouter(prefix='/users')
 security_scheme = HTTPBearer(scheme_name="Bearer")
 
 
-
 @router.post("", response_model=UserSchema)
 async def create_user(
     payload: CreateUserSchema,

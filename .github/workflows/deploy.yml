@@ -1,0 +1,48 @@
+name: Deploy to VPS (manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Select a branch'
+        required: true
+        default: 'main'
+        type: choice
+        options:
+          - main
+
+concurrency:
+  group: deploy-coursebackend
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update code on server (checkout + pull)
+        uses: appleboy/ssh-action@v1.2.4
+        with:
+          host: ${{ secrets.HOST }}
+          port: ${{ secrets.PORT }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.PRIVATE_KEY }}
+          script: |
+            set -euo pipefail
+            cd /opt/coursebackend
+            git checkout ${{ github.event.inputs.branch }}
+            git pull --ff-only origin ${{ github.event.inputs.branch }}
+
+      - name: Build & restart containers
+        uses: appleboy/ssh-action@v1.2.4
+        with:
+          host: ${{ secrets.HOST }}
+          port: ${{ secrets.PORT }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.PRIVATE_KEY }}
+          command_timeout: 60m
+          script: |
+            set -euo pipefail
+            export PATH="$HOME/bin:$PATH"
+            docker version
+            cd /opt/coursebackend
+            docker compose -f build/docker-compose.prod.yaml up -d --build

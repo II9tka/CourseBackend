@@ -112,6 +112,7 @@ celerybeat.pid
 
 # Environments
 .env
+config/config.yaml
 .venv
 env/
 venv/

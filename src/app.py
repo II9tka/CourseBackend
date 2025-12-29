@@ -1,3 +1,5 @@
+import uvicorn
+
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -35,11 +37,10 @@ container.wire(
 app = FastAPI(lifespan=lifespan)
 app.include_router(api_v1.router)
 
-# if __name__ == "__main__":
-#     uvicorn.run(
-#         "app:app",
-#         host="0.0.0.0",
-#         port=8000,
-#         workers=4,
-#         reload=True,
-#     )
+if __name__ == "__main__":
+    uvicorn.run(
+        "app:app",
+        host=settings.app.host,
+        port=settings.app.port,
+        reload=settings.app.debug
+    )

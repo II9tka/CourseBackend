@@ -3,33 +3,41 @@ services:
     image: postgres:16-alpine
     container_name: backend_course_postgres
     env_file:
-      - ../build/.env
+      - /etc/coursebackend/.env
     ports:
-      - "5433:5432"                        # host:container → снаружи 5433, внутри стандартный 5432
+      - "5433:5432"
     volumes:
-      - db_data:/var/lib/postgresql/data   # ПЕРСИСТЕНТНЫЕ ДАННЫЕ БД
-      - ./init:/docker-entrypoint-initdb.d # (опционально) скрипты первого запуска
+      - db_data:/var/lib/postgresql/data
+      - ./init:/docker-entrypoint-initdb.d
     networks:
       - course_net
     healthcheck:
-      test: ["CMD-SHELL", "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'"]
+      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB" ]
       interval: 10s
       timeout: 3s
       retries: 3
 
-#  app:
-#    build:
-#      context: ..
-#      dockerfile: build/Dockerfile.prod
-#    container_name: backend_course_app
-#    ports:
-#      - "9100:9100"
-#    networks:
-#      - course_net
-#    depends_on:
-#      db:
-#        condition: service_healthy
-
+  app:
+    build:
+      context: ..
+      dockerfile: build/Dockerfile.prod
+    container_name: backend_course_app
+    env_file:
+      - /etc/coursebackend/.env
+    volumes:
+      - type: bind
+        source: /etc/coursebackend/config.yaml
+        target: /config/config.yaml
+        read_only: true
+        bind:
+          create_host_path: false
+    ports:
+      - "9100:9100"
+    networks:
+      - course_net
+    depends_on:
+      db:
+        condition: service_healthy
 
 volumes:
   db_data:
