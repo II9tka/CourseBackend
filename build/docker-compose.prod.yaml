@@ -3,7 +3,7 @@ services:
     image: postgres:16-alpine
     container_name: backend_course_postgres
     env_file:
-      - ../build/.env
+      - ../config/.env
     ports:
       - "5433:5432"                        # host:container → снаружи 5433, внутри стандартный 5432
     volumes:
@@ -17,19 +17,18 @@ services:
       timeout: 3s
       retries: 3
 
-#  app:
-#    build:
-#      context: ..
-#      dockerfile: build/Dockerfile.prod
-#    container_name: backend_course_app
-#    ports:
-#      - "9100:9100"
-#    networks:
-#      - course_net
-#    depends_on:
-#      db:
-#        condition: service_healthy
-
+  app:
+    build:
+      context: ..
+      dockerfile: build/Dockerfile.prod
+    container_name: backend_course_app
+    ports:
+      - "9100:9100"
+    networks:
+      - course_net
+    depends_on:
+      db:
+        condition: service_healthy
 
 volumes:
   db_data:

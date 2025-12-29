@@ -3,7 +3,7 @@ services:
     image: postgres:16-alpine
     container_name: backend_course_postgres
     env_file:
-      - ../build/.env
+      - ../config/.env
     ports:
       - "5433:5432"                        # host:container → снаружи 5433, внутри стандартный 5432
     volumes:
